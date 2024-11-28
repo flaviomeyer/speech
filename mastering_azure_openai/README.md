@@ -72,3 +72,29 @@ The CI/CD pipeline is defined in `CD-Bicep.yml`.
 ## Parameters
 
 The deployment parameters are defined in `parameters/parameters.bicepparam`.
+
+| Parameter Name                       | Type   | Default Value                                                              |
+|--------------------------------------|--------|----------------------------------------------------------------------------|
+| par_customerShort                    | string |                                                                            |
+| par_environment                      | string |                                                                            |
+| PAR_SERVICENAMEOAI                   | string | 'oai'                                                                      |
+| PAR_SERVICENAMEASP                   | string | 'asp'                                                                      |
+| PAR_SERVICENAMEAPP                   | string | 'app'                                                                      |
+| par_rgName                           | string | '${par_customerShort}-rgr-${PAR_SERVICENAMEOAI}-${par_environment}-${par_location}-001' |
+| par_location                         | string | 'westeurope'                                                               |
+| par_cognitiveServicesName            | string | '${par_customerShort}-${PAR_SERVICENAMEOAI}-${par_environment}-${par_location}-001' |
+| par_skuName                          | string | 'S0'                                                                       |
+| par_kind                             | string | 'OpenAI'                                                                   |
+| par_publicNetworkAccess              | string | 'Enabled'                                                                  |
+| par_cognitiveServicesDeploymentName  | string | 'gpt-4o'                                                                   |
+| par_skuDeploymentName                | string | 'GlobalStandard'                                                           |
+| par_skuDeploymentCapacity            | int    | 50                                                                         |
+| par_modelVersion                     | string | '2024-08-06'                                                               |
+| par_raiPolicyName                    | string | 'Microsoft.DefaultV2'                                                      |
+| par_versionUpgradeOption             | string | 'OnceCurrentVersionExpired'                                                |
+| par_appServicePlanName               | string | '${par_customerShort}-${PAR_SERVICENAMEASP}-${par_environment}-${par_location}-001' |
+| par_appServiceName                   | string | '${par_customerShort}-${PAR_SERVICENAMEAPP}-${par_environment}-${par_location}-001' |
+| par_runtimeName                      | string | 'python'                                                                   |
+| par_runtimeVersion                   | string | '3.11'                                                                     |
+| par_azureOpenAIEndpoint              | string | 'https://${par_cognitiveServicesName}.openai.azure.com/'                   |
+| par_azureOpenAIKey                   | string |                                                                            |
