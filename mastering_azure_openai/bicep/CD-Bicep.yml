@@ -1,0 +1,72 @@
+trigger: none
+
+variables:
+  serviceConnection: x-p-devops-mlsa
+  location: "switzerlandnorth"
+  templateFile: main.bicep
+  templateParameterFile: parameters.bicepparam
+
+pool:
+  vmImage: "ubuntu-latest"
+
+stages:
+  - stage: Lint
+    jobs:
+      - job: LintCode
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: "$(serviceConnection)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: "az bicep build --file main.bicep"
+
+  - stage: Validate
+    dependsOn: Lint
+    jobs:
+      - job: ValidateBicepTemplate
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: "$(serviceConnection)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                az deployment sub validate \
+                  --template-file '$(Build.SourcesDirectory)/$(templateFile)' \
+                  --parameters '$(Build.SourcesDirectory)/$(templateParameterFile)' \
+                  --location '$(location)'
+
+  - stage: Preview
+    dependsOn: Validate
+    jobs:
+      - job: Preview
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: "$(serviceConnection)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                az deployment sub what-if \
+                  --template-file '$(Build.SourcesDirectory)/$(templateFile)' \
+                  --parameters '$(Build.SourcesDirectory)/$(templateParameterFile)' \
+                  --location '$(location)'
+
+  - stage: Run
+    dependsOn: Preview
+    jobs:
+      - job: Deploy
+        steps:
+          - task: AzureCLI@2
+            displayName: "Deploy the ressources"
+            inputs:
+              azureSubscription: "$(serviceConnection)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                az bicep install
+                az deployment sub create --name 'DeployRessources' \
+                  --location '$(location)' \
+                  --template-file '$(Build.SourcesDirectory)/$(templateFile)' \
+                  --parameters '$(Build.SourcesDirectory)/$(templateParameterFile)'
